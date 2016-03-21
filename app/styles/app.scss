@@ -15,3 +15,25 @@ $icon-font-path: '../fonts/';
 img {
   max-width: 100%;
 }
+
+// .form-item{
+//   &:not(:last-of-type), &:not(:first-of-type){
+//     margin-right: 10px;
+//     margin-left: 10px;
+//   }
+// }
+//
+// .form-inline{
+//   input.form-control{
+//     width: 33%;
+//   }
+//   button{
+//   }
+// }
+
+.shirt-description{
+  height: 35px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

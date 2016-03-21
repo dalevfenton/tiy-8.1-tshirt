@@ -1,7 +1,81 @@
 var React = require('react');
+var DropdownButton = require('react-bootstrap').DropdownButton;
+var MenuItem = require('react-bootstrap').MenuItem;
+var $ = require('jquery');
+
+var ShirtDetail = React.createClass({
+  getInitialState: function(){
+    return {
+      size: 'Size',
+      quantity: ''
+    }
+  },
+  handleSize: function(e, key){
+    var sizes = ['X-Small', 'Small', 'Medium', 'Large', 'X-Large', 'XX-Large'];
+    e.preventDefault();
+    this.setState({ size: sizes[key-1] });
+  },
+  handleQuantity: function(e){
+    e.preventDefault();
+    this.setState({quantity: e.target.value});
+  },
+  handleSubmit: function(e){
+    e.preventDefault();
+    var cartItem = $.extend( {}, {'shirt': this.props.model.toJSON(), 'size': this.state.size, 'quantity': this.state.quantity, 'timeAdded': Date.now() });
+    var dataObj = [];
+    if(localStorage.getItem('cart')){
+      var rawData = localStorage.getItem('cart');
+      var dataObj = JSON.parse(rawData);
+      dataObj.push(cartItem);
+    }else{
+      dataObj.push(cartItem);
+    }
+    console.log(dataObj);
+    localStorage.setItem('cart', JSON.stringify(dataObj));
+  },
+  render: function(){
+    var shirt = this.props.model;
+    return (
+      <div className="col-sm-4">
+        <div className="thumbnail">
+          <img src={shirt.get('image')} alt={shirt.get('name')} />
+          <div className="caption">
+            <h3>{shirt.get('name')}</h3>
+            <div className="shirt-description">{shirt.get('description')}</div>
+            <p>${ Number( shirt.get('price') ).toFixed(2) }</p>
+            <p><a href={shirt.get('reallink')}>Buy On Woot!</a></p>
+            <form className="form-inline" onSubmit={this.handleSubmit}>
+              <div className="form-group">
+                <input type="number"
+                  className="form-control form-item"
+                  name="quantity"
+                  min="1"
+                  placeholder="Qty"
+                  value={this.state.quantity}
+                  onChange={this.handleQuantity} />
+                <DropdownButton title={this.state.size} id="dropdown-size-medium" onSelect={this.handleSize}>
+                  <MenuItem eventKey="1">X-Small</MenuItem>
+                  <MenuItem eventKey="2">Small</MenuItem>
+                  <MenuItem eventKey="3">Medium</MenuItem>
+                  <MenuItem eventKey="4">Large</MenuItem>
+                  <MenuItem eventKey="5">X-Large</MenuItem>
+                  <MenuItem eventKey="6">XX-Large</MenuItem>
+                </DropdownButton>
+                <button type="submit" className="btn btn-primary  form-item">Add to Cart</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+});
 
 var Shirts = React.createClass({
   render: function(){
+    var shirts = this.props.collection.map(function(model){
+      return (<ShirtDetail model={model} key={model.get('id')} />);
+    }.bind(this));
     return (
       <div className="container-fluid">
         <div className="row">
@@ -11,36 +85,7 @@ var Shirts = React.createClass({
           </div>
         </div>
         <div className="row">
-          <div className="col-sm-6 col-md-4">
-            <div className="thumbnail">
-              <img src="http://unsplash.it/600/400" alt="dummy image" />
-              <div className="caption">
-                <h3>We Won T-Shirt</h3>
-                <p>This shirt is so amazing that it will make you amazing when you wear it.</p>
-                <form className="form-inline">
-                  <div className="form-group">
-                      <input type="number" className="form-control" name="quantity" min="1" placeholder="Qty" />
-                  </div>
-                  <div className="form-group">
-                    <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      Size <span className="caret"></span>
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li><a href="#">X-Small</a></li>
-                      <li><a href="#">Small</a></li>
-                      <li><a href="#">Medium</a></li>
-                      <li><a href="#">Large</a></li>
-                      <li><a href="#">X-Large</a></li>
-                      <li><a href="#">XX-Large</a></li>
-                    </ul>
-                  </div>
-                  <div className="form-group">
-                    <button type="button" className="btn btn-primary">Add to Cart</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+          {shirts}
         </div>
       </div>
     );
