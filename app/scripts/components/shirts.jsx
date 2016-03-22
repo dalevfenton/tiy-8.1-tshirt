@@ -41,6 +41,7 @@ var ShirtDetail = React.createClass({
       this.setState({'size': 'Size',
         'quantity': '', 'alertVisible': false,
         'warning': '', 'successVisible': true });
+      setTimeout(this.handleSuccessDismiss, 3000);
     }else if( this.state.size === 'Size' ){
       this.setState({'warning': 'Pick A Size For Your Shirt', 'successVisible': false});
       this.handleAlertShow();
@@ -49,24 +50,30 @@ var ShirtDetail = React.createClass({
       this.handleAlertShow();
     }
   },
+  dismiss: function(){
+
+  },
   handleAlertDismiss() {
     this.setState({alertVisible: false});
   },
   handleAlertShow() {
     this.setState({alertVisible: true});
   },
-  handleSuccess() {
-
+  handleSuccessDismiss() {
+    this.setState({successVisible: false});
   },
   render: function(){
     var shirt = this.props.model;
     var alert;
     if (this.state.alertVisible) {
-     alert = (<Alert bsStyle="danger" dismissAfter={1000} onDismiss={this.dismiss}>{this.state.warning}</Alert>);
+     alert = (<Alert bsStyle="danger"
+       onDismiss={this.handleAlertDismiss} dismissAfter={2000}>
+       {this.state.warning}
+     </Alert>);
     }
     if (this.state.successVisible) {
      alert = (
-       <Alert bsStyle="success" dismissAfter={1000} onDismiss={this.dismiss}>
+       <Alert bsStyle="success" onDismiss={this.handleSuccessDismiss} dismissAfter={3000}>
            Order Added To Cart <br />
           <a href="cart.html">View Cart</a>
       </Alert>);
