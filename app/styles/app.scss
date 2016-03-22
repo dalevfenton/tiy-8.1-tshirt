@@ -16,13 +16,11 @@ img {
   max-width: 100%;
 }
 
-// .form-item{
-//   &:not(:last-of-type), &:not(:first-of-type){
-//     margin-right: 10px;
-//     margin-left: 10px;
-//   }
-// }
-//
+.form-item{
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
 // .form-inline{
 //   input.form-control{
 //     width: 33%;

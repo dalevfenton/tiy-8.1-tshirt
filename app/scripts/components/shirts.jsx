@@ -2,6 +2,7 @@ var React = require('react');
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
 var $ = require('jquery');
+var _ = require('underscore');
 
 var ShirtDetail = React.createClass({
   getInitialState: function(){
@@ -21,7 +22,7 @@ var ShirtDetail = React.createClass({
   },
   handleSubmit: function(e){
     e.preventDefault();
-    var cartItem = $.extend( {}, {'shirt': this.props.model.toJSON(), 'size': this.state.size, 'quantity': this.state.quantity, 'timeAdded': Date.now() });
+    var cartItem = $.extend( {}, {'shirt': _.omit(this.props.model.toJSON(), 'id'), 'size': this.state.size, 'quantity': this.state.quantity, 'timeAdded': Date.now() });
     var dataObj = [];
     if(localStorage.getItem('cart')){
       var rawData = localStorage.getItem('cart');
@@ -32,6 +33,7 @@ var ShirtDetail = React.createClass({
     }
     console.log(dataObj);
     localStorage.setItem('cart', JSON.stringify(dataObj));
+    this.setState({'size': 'Size', 'quantity': '' });
   },
   render: function(){
     var shirt = this.props.model;
@@ -53,14 +55,14 @@ var ShirtDetail = React.createClass({
                   placeholder="Qty"
                   value={this.state.quantity}
                   onChange={this.handleQuantity} />
-                <DropdownButton title={this.state.size} id="dropdown-size-medium" onSelect={this.handleSize}>
-                  <MenuItem eventKey="1">X-Small</MenuItem>
-                  <MenuItem eventKey="2">Small</MenuItem>
-                  <MenuItem eventKey="3">Medium</MenuItem>
-                  <MenuItem eventKey="4">Large</MenuItem>
-                  <MenuItem eventKey="5">X-Large</MenuItem>
-                  <MenuItem eventKey="6">XX-Large</MenuItem>
-                </DropdownButton>
+                  <DropdownButton dropup={true} title={this.state.size} id="dropdown-size-medium" onSelect={this.handleSize}>
+                    <MenuItem eventKey="1">X-Small</MenuItem>
+                    <MenuItem eventKey="2">Small</MenuItem>
+                    <MenuItem eventKey="3">Medium</MenuItem>
+                    <MenuItem eventKey="4">Large</MenuItem>
+                    <MenuItem eventKey="5">X-Large</MenuItem>
+                    <MenuItem eventKey="6">XX-Large</MenuItem>
+                  </DropdownButton>
                 <button type="submit" className="btn btn-primary  form-item">Add to Cart</button>
               </div>
             </form>
