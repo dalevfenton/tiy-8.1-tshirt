@@ -35,3 +35,14 @@ img {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.thumbnail{
+  position: relative;
+}
+.alert{
+  position: absolute;
+  text-align: center;
+  width: 90%;
+  left: 5%;
+  top: 50%;
+}

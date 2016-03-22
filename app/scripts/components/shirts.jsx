@@ -1,14 +1,19 @@
 var React = require('react');
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
+var Alert = require('react-bootstrap').Alert;
 var $ = require('jquery');
 var _ = require('underscore');
+require('../bootstrap.min.js');
 
 var ShirtDetail = React.createClass({
   getInitialState: function(){
     return {
       size: 'Size',
-      quantity: ''
+      quantity: '',
+      warning: '',
+      alertVisible: false,
+      successVisible: false
     }
   },
   handleSize: function(e, key){
@@ -22,20 +27,50 @@ var ShirtDetail = React.createClass({
   },
   handleSubmit: function(e){
     e.preventDefault();
-    var cartItem = $.extend( {}, {'shirt': _.omit(this.props.model.toJSON(), 'id'), 'size': this.state.size, 'quantity': this.state.quantity, 'timeAdded': Date.now() });
-    var dataObj = [];
-    if(localStorage.getItem('cart')){
-      var rawData = localStorage.getItem('cart');
-      var dataObj = JSON.parse(rawData);
-      dataObj.push(cartItem);
-    }else{
-      dataObj.push(cartItem);
+    if(this.state.size !== 'Size' && this.state.quantity !== ''){
+      var cartItem = $.extend( {}, {'shirt': _.omit(this.props.model.toJSON(), 'id'), 'size': this.state.size, 'quantity': this.state.quantity, 'timeAdded': Date.now() });
+      var dataObj = [];
+      if(localStorage.getItem('cart')){
+        var rawData = localStorage.getItem('cart');
+        var dataObj = JSON.parse(rawData);
+        dataObj.push(cartItem);
+      }else{
+        dataObj.push(cartItem);
+      }
+      localStorage.setItem('cart', JSON.stringify(dataObj));
+      this.setState({'size': 'Size',
+        'quantity': '', 'alertVisible': false,
+        'warning': '', 'successVisible': true });
+    }else if( this.state.size === 'Size' ){
+      this.setState({'warning': 'Pick A Size For Your Shirt', 'successVisible': false});
+      this.handleAlertShow();
+    }else {
+      this.setState({'warning': 'Select How Many Shirts You Want', 'successVisible': false})
+      this.handleAlertShow();
     }
-    localStorage.setItem('cart', JSON.stringify(dataObj));
-    this.setState({'size': 'Size', 'quantity': '' });
+  },
+  handleAlertDismiss() {
+    this.setState({alertVisible: false});
+  },
+  handleAlertShow() {
+    this.setState({alertVisible: true});
+  },
+  handleSuccess() {
+
   },
   render: function(){
     var shirt = this.props.model;
+    var alert;
+    if (this.state.alertVisible) {
+     alert = (<Alert bsStyle="danger" dismissAfter={1000} onDismiss={this.dismiss}>{this.state.warning}</Alert>);
+    }
+    if (this.state.successVisible) {
+     alert = (
+       <Alert bsStyle="success" dismissAfter={1000} onDismiss={this.dismiss}>
+           Order Added To Cart <br />
+          <a href="cart.html">View Cart</a>
+      </Alert>);
+    }
     return (
       <div className="col-sm-4">
         <div className="thumbnail">
@@ -45,6 +80,7 @@ var ShirtDetail = React.createClass({
             <div className="shirt-description">{shirt.get('description')}</div>
             <p>${ Number( shirt.get('price') ).toFixed(2) }</p>
             <p><a href={shirt.get('reallink')}>Buy On Woot!</a></p>
+            {alert}
             <form className="form-inline" onSubmit={this.handleSubmit}>
               <div className="form-group">
                 <input type="number"

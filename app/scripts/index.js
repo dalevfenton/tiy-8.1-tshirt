@@ -15,7 +15,7 @@ var Shirts = require('./components/shirts.jsx');
 var Cart = require('./components/cart.jsx');
 var Cookies = require('js-cookie');
 
-Cookies.set('username', 'Dale');
+// Cookies.set('username', 'Dale');
 
 var stringData = JSON.stringify(data);
 
