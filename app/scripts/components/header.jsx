@@ -1,7 +1,6 @@
 var React = require('react');
 var LoginButton = require('./login.jsx');
 var ProfileButton = require('./profile.jsx');
-var OrdersButton = require('./orders.jsx');
 var Cookies = require('js-cookie');
 
 

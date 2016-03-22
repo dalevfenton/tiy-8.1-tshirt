@@ -23,9 +23,7 @@ var OrderItem = React.createClass({
       var total = Number(item.quantity * item.shirt.price);
       return memo += total;
     }, 0);
-    console.log(this.props.created);
-    var date = new Date( this.props.created );
-    console.log(date);
+    var date = new Date( this.props.created * 1000 );
     return (
       <div>
       <h6>Ordered On: { String(date) } </h6>
