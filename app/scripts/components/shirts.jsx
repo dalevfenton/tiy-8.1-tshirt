@@ -57,9 +57,6 @@ var ShirtDetail = React.createClass({
       this.handleAlertShow();
     }
   },
-  dismiss: function(){
-
-  },
   handleAlertDismiss() {
     this.setState({alertVisible: false});
   },
