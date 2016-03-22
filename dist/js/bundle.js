@@ -150,6 +150,7 @@ var Cart = React.createClass({displayName: "Cart",
       if(this.props.user){
         button = (React.createElement(StripeButton, {handleCheckout: this.props.handleCheckout, total: total, user: this.props.user}));
       }else{
+        console.log(this.props);
         button = (React.createElement(LoginButton, {login: this.props.login}));
       }
       //do the return for render with items in the cart
@@ -300,7 +301,7 @@ var CartPage = React.createClass({displayName: "CartPage",
     return (
       React.createElement("div", null, 
         React.createElement("div", {id: "header"}, 
-          React.createElement(Header, {user: this.state.user, page: window.location.href, logOut: this.logOut, edit: this.edit})
+          React.createElement(Header, {user: this.state.user, page: window.location.href, logOut: this.logOut, login: this.login, edit: this.edit})
         ), 
         React.createElement("div", null, 
           React.createElement(Cart, {user: this.state.user, 
@@ -407,6 +408,7 @@ var LoginButton = React.createClass({displayName: "LoginButton",
     e.preventDefault();
     var username = this.state.username;
     var email = this.state.email;
+    console.log(this.props);
     this.props.login(username, email)
   },
   handleName: function(){
@@ -553,10 +555,16 @@ var ProfileButton = React.createClass({displayName: "ProfileButton",
     this.setState({ showModal: true });
   },
   render() {
-    var purchases = this.props.user.get('purchases');
-    purchases = purchases.map(function(purchase){
-      return ( React.createElement(OrderItem, {created: purchase.token.created, purchase: purchase.cart, key: purchase.token.created}) );
-    });
+    var purchases;
+    if(this.props.user.get('purchases')){
+      purchases = this.props.user.get('purchases');
+      purchases = purchases.map(function(purchase){
+        return ( React.createElement(OrderItem, {created: purchase.token.created, purchase: purchase.cart, key: purchase.token.created}) );
+      });
+    }else{
+      purchases = ( React.createElement("div", null) );
+    }
+
     return (
         React.createElement("li", {onClick: this.open}, React.createElement("a", {href: "#"}, 
           "Edit Profile"

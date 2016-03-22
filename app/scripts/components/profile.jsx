@@ -85,10 +85,16 @@ var ProfileButton = React.createClass({
     this.setState({ showModal: true });
   },
   render() {
-    var purchases = this.props.user.get('purchases');
-    purchases = purchases.map(function(purchase){
-      return ( <OrderItem created={purchase.token.created} purchase={purchase.cart} key={purchase.token.created} /> );
-    });
+    var purchases;
+    if(this.props.user.get('purchases')){
+      purchases = this.props.user.get('purchases');
+      purchases = purchases.map(function(purchase){
+        return ( <OrderItem created={purchase.token.created} purchase={purchase.cart} key={purchase.token.created} /> );
+      });
+    }else{
+      purchases = ( <div></div> );
+    }
+
     return (
         <li onClick={this.open}><a href="#">
           Edit Profile

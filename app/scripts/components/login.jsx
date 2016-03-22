@@ -18,6 +18,7 @@ var LoginButton = React.createClass({
     e.preventDefault();
     var username = this.state.username;
     var email = this.state.email;
+    console.log(this.props);
     this.props.login(username, email)
   },
   handleName: function(){

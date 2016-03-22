@@ -138,7 +138,8 @@ var Cart = React.createClass({
       if(this.props.user){
         button = (<StripeButton handleCheckout={this.props.handleCheckout} total={total} user={this.props.user} />);
       }else{
-        button = (<LoginButton login={this.props.login}/>);
+        console.log(this.props);
+        button = (<LoginButton login={this.props.login} />);
       }
       //do the return for render with items in the cart
       //========================================================================
@@ -288,7 +289,7 @@ var CartPage = React.createClass({
     return (
       <div>
         <div id="header">
-          <Header user={this.state.user} page={window.location.href} logOut={this.logOut} edit={this.edit} />
+          <Header user={this.state.user} page={window.location.href} logOut={this.logOut} login={this.login} edit={this.edit} />
         </div>
         <div>
           <Cart user={this.state.user}
