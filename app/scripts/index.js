@@ -6,14 +6,16 @@ window.jQuery = $ = require('jquery');
 require('./bootstrap.min.js');
 
 var data = require('./data');
-console.log(data);
+
 var models = require('./models');
 var shirts = new models.OrderCollection(data);
-var cart;
+var cart, user;
 var Header = require('./components/header.jsx');
 var Shirts = require('./components/shirts.jsx');
 var Cart = require('./components/cart.jsx');
+var Cookies = require('js-cookie');
 
+Cookies.set('username', 'Dale');
 
 var stringData = JSON.stringify(data);
 
@@ -24,7 +26,9 @@ if(localStorage.getItem('cart')){
   cart = new models.OrderCollection();
 }
 
-console.log(cart);
+if(Cookies.get('username')){
+  user = Cookies.get('username');
+}
 
 ReactDOM.render(
   React.createElement(
@@ -40,7 +44,9 @@ if( sort == 'cart.html' ){
   ReactDOM.render(
     React.createElement(
       Cart,
-      { cart: cart }
+      { cart: cart,
+        user: user
+      }
     ),
     document.getElementById('app')
   );

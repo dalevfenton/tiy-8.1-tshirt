@@ -31,7 +31,6 @@ var ShirtDetail = React.createClass({
     }else{
       dataObj.push(cartItem);
     }
-    console.log(dataObj);
     localStorage.setItem('cart', JSON.stringify(dataObj));
     this.setState({'size': 'Size', 'quantity': '' });
   },
