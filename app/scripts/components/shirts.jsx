@@ -2,6 +2,9 @@ var React = require('react');
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
 var Alert = require('react-bootstrap').Alert;
+var Header = require('./header.jsx');
+var models = require('../models');
+var Cookies = require('js-cookie');
 var $ = require('jquery');
 var _ = require('underscore');
 require('../bootstrap.min.js');
@@ -136,4 +139,66 @@ var Shirts = React.createClass({
   }
 });
 
-module.exports = Shirts;
+var ShirtsPage = React.createClass({
+  getInitialState: function(){
+    return {
+      user: this.props.user,
+      accounts: this.props.accounts
+    };
+  },
+  componentWillMount: function(){
+  },
+  login: function(username, email){
+    if(username && email){
+      Cookies.set('username', username);
+      Cookies.set('email', email);
+      console.log(this.state.accounts);
+      var accounts = this.state.accounts;
+      if(accounts){
+        if(accounts.findWhere({username: username})){
+          this.setState({ user: accounts.findWhere({username: username}) });
+        }else{
+          var user = new models.Account({username: username, email: email });
+          this.setState({ user: user });
+          user = accounts.add(user);
+          user.save();
+        }
+      }else{
+        console.log('error with login, no accounts collection is set');
+      }
+    }else{
+      this.setState({'user': undefined});
+    }
+  },
+  edit: function(username, email){
+    var user = this.state.user;
+    user.set({username: username, email: email });
+    user.save();
+    Cookies.set('username', username);
+    Cookies.set('email', email);
+    this.setState({'user': user });
+  },
+  logOut: function(){
+    Cookies.remove('username');
+    Cookies.remove('email');
+    this.setState({'user': undefined});
+    this.forceUpdate();
+  },
+  render: function(){
+    return (
+      <div>
+        <div id="header">
+          <Header user={this.state.user} page={window.location.href} login={this.login} edit={this.edit} logOut={this.logOut}/>
+        </div>
+        <div>
+          <Shirts collection={this.props.collection}
+            cart={this.props.cart}
+            user={this.state.user}
+          />
+        </div>
+      </div>
+
+    );
+  }
+});
+module.exports = ShirtsPage;

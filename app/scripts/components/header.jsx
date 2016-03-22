@@ -1,4 +1,10 @@
 var React = require('react');
+var LoginButton = require('./login.jsx');
+var ProfileButton = require('./profile.jsx');
+var OrdersButton = require('./orders.jsx');
+var Cookies = require('js-cookie');
+
+
 
 var Header = React.createClass({
   render: function(){
@@ -9,6 +15,26 @@ var Header = React.createClass({
       cartClass = 'active';
     }else{
       shirtClass = 'active';
+    }
+    var userTab;
+    if( this.props.user !== undefined ){
+      userTab = (
+        <li className="dropdown">
+          <a href="#" className="dropdown-toggle"
+            data-toggle="dropdown" role="button"
+            aria-haspopup="true" aria-expanded="false">
+            {this.props.user.get('username')}<span className="caret"></span>
+          </a>
+          <ul className="dropdown-menu">
+            <ProfileButton user={this.props.user} edit={this.props.edit} />
+            <li><a href="#">Your Orders</a></li>
+            <li role="separator" className="divider"></li>
+            <li><a href="#" onClick={this.props.logOut}>Log Out</a></li>
+          </ul>
+        </li>
+      );
+    }else{
+      userTab = (<li><LoginButton login={this.props.login} /></li>);
     }
     return (
       <nav className="navbar navbar-default">
@@ -29,6 +55,9 @@ var Header = React.createClass({
             <ul className="nav navbar-nav">
               <li className={shirtClass}><a href="/dist">T-Shirts</a></li>
               <li className={cartClass}><a href="cart.html">Cart</a></li>
+            </ul>
+            <ul className="nav navbar-nav navbar-right">
+              {userTab}
             </ul>
           </div>
         </div>

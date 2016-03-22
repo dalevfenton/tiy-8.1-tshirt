@@ -11,8 +11,8 @@ var models = require('./models');
 var shirts = new models.OrderCollection(data);
 var cart, user;
 var Header = require('./components/header.jsx');
-var Shirts = require('./components/shirts.jsx');
-var Cart = require('./components/cart.jsx');
+var ShirtsPage = require('./components/shirts.jsx');
+var CartPage = require('./components/cart.jsx');
 var Cookies = require('js-cookie');
 
 // Cookies.set('username', 'Dale');
@@ -25,40 +25,42 @@ if(localStorage.getItem('cart')){
 }else{
   cart = new models.OrderCollection();
 }
+var accounts = new models.AccountCollection();
+accounts.fetch().done(function(){
+  if(Cookies.get('username') !== "undefined" && Cookies.get('email') !== "undefined" ){
+    user = accounts.findWhere({username: Cookies.get('username'), email: Cookies.get('email') });
+  }else{
+    user = undefined;
+  }
 
-if(Cookies.get('username')){
-  user = Cookies.get('username');
-}
+  console.log(user);
 
-ReactDOM.render(
-  React.createElement(
-    Header,
-    {page: window.location.href}
-  ),
-  document.getElementById('header')
-);
+  var sort = window.location.href.slice(-9);
 
-var sort = window.location.href.slice(-9);
-
-if( sort == 'cart.html' ){
-  ReactDOM.render(
-    React.createElement(
-      Cart,
-      { cart: cart,
-        user: user
-      }
-    ),
-    document.getElementById('app')
-  );
-}else{
-  ReactDOM.render(
-    React.createElement(
-      Shirts,
-      {
-        collection: shirts,
-        cart: cart
-      }
-    ),
-    document.getElementById('app')
-  );
-}
+  if( sort == 'cart.html' ){
+    ReactDOM.render(
+      React.createElement(
+        CartPage,
+        {
+          cart: cart,
+          user: user,
+          accounts: accounts
+        }
+      ),
+      document.getElementById('app')
+    );
+  }else{
+    ReactDOM.render(
+      React.createElement(
+        ShirtsPage,
+        {
+          collection: shirts,
+          cart: cart,
+          user: user,
+          accounts: accounts
+        }
+      ),
+      document.getElementById('app')
+    );
+  }
+});

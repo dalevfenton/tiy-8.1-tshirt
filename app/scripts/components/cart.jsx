@@ -1,10 +1,11 @@
 /** @jsx React.DOM */
 
 var React = require('react');
-var Button = require('react-bootstrap').Button;
-var Modal = require('react-bootstrap').Modal;
-var OverlayTrigger = require('react-bootstrap').OverlayTrigger;
+var LoginButton = require('./login.jsx');
+var Header = require('./header.jsx');
 var ReactScriptLoaderMixin = require('react-script-loader').ReactScriptLoaderMixin;
+var Cookies = require('js-cookie');
+var models = require('../models');
 
 var CartItem = React.createClass({
   remove: function(){
@@ -55,7 +56,6 @@ var StripeButton = React.createClass({
     // the script has loaded.
     hasPendingClick: false,
     handleCheckout: function(token){
-      console.log(token);
       this.props.handleCheckout(token);
     },
     onScriptLoaded: function() {
@@ -110,103 +110,20 @@ var StripeButton = React.createClass({
 });
 
 
-var LoginButton = React.createClass({
-  getInitialState() {
-    return { showModal: false };
-  },
 
-  close() {
-    this.setState({ showModal: false });
-  },
-
-  open() {
-    this.setState({ showModal: true });
-  },
-
-  render() {
-    return (
-      <div>
-        <Button
-          bsStyle="primary"
-          onClick={this.open}
-        >
-          Login Now To Checkout
-        </Button>
-        <Modal show={this.state.showModal} onHide={this.close}>
-          <Modal.Header closeButton>
-            <Modal.Title>Modal heading</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <h4>Text in a modal</h4>
-            <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-
-            <hr />
-
-            <h4>Overflowing text to show scroll behavior</h4>
-            <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-            <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-            <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-            <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-            <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-            <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={this.close}>Close</Button>
-          </Modal.Footer>
-        </Modal>
-      </div>
-    );
-  }
-});
 
 var Cart = React.createClass({
-  getInitialState: function(){
-    return {
-      cart: this.props.cart,
-    }
-  },
-  componentWillMount: function(){
-    this.intervals = [];
-  },
-  componentWillUnmount: function(){
-    this.intervals.forEach(clearInterval);
-  },
-  componentDidMount: function(){
-    this.setInterval( this.update, 1000 );
-  },
-  update: function(){
-    this.forceUpdate();
-  },
-  handleCheckout: function(token){
-    localStorage.removeItem('cart');
-    this.state.cart.reset();
-    this.forceUpdate();
-  },
-  setInterval: function() {
-    this.intervals.push(setInterval.apply(null, arguments));
-  },
-  removeItem: function(model){
-    var model = this.state.cart.get(model);
-    model.destroy();
-    var data = this.state.cart.toJSON();
-    localStorage.setItem('cart', JSON.stringify(data));
-    this.setState({ 'cart': this.state.cart });
-    this.forceUpdate();
-  },
   render: function(){
     //setup variables to fill render's return
     //==========================================================================
     //setup return if we have items in our cart
-    if(this.state.cart.models.length > 0){
+    if(this.props.cart.models.length > 0){
       //build the <CartItem /> components for each item in the cart
-      var shirts = this.state.cart.map(function(shirt){
-        return ( <CartItem model={shirt} removeItem={this.removeItem} key={shirt.cid}/> )
+      var shirts = this.props.cart.map(function(shirt){
+        return ( <CartItem model={shirt} removeItem={this.props.removeItem} key={shirt.cid}/> )
       }.bind(this));
       //build an object with the total price and quantity of items in the cart
-      var total = this.state.cart.reduce(function(memo, item){
+      var total = this.props.cart.reduce(function(memo, item){
         //check and make sure we only add items that are not expired
         var timeLeft = ((60*10*1000) - (Date.now() - item.get('timeAdded') ) )/ (1000);
         if(timeLeft > 0){
@@ -219,9 +136,9 @@ var Cart = React.createClass({
       //<StripeButton /> component
       var button;
       if(this.props.user){
-        button = (<StripeButton handleCheckout={this.handleCheckout} total={total} user={this.props.user} />);
+        button = (<StripeButton handleCheckout={this.props.handleCheckout} total={total} user={this.props.user} />);
       }else{
-        button = (<LoginButton />);
+        button = (<LoginButton login={this.props.login}/>);
       }
       //do the return for render with items in the cart
       //========================================================================
@@ -284,4 +201,104 @@ var Cart = React.createClass({
   }
 });
 
-module.exports = Cart;
+var CartPage = React.createClass({
+  getInitialState: function(){
+    return {
+      user: this.props.user,
+      accounts: this.props.accounts,
+      cart: this.props.cart
+    }
+  },
+  componentWillMount: function(){
+    this.intervals = [];
+  },
+  componentWillUnmount: function(){
+    this.intervals.forEach(clearInterval);
+  },
+  componentDidMount: function(){
+    this.setInterval( this.update, 1000 );
+  },
+  setInterval: function() {
+    this.intervals.push(setInterval.apply(null, arguments));
+  },
+  update: function(){
+    this.forceUpdate();
+  },
+  login: function(username, email){
+    if(username && email){
+      Cookies.set('username', username);
+      Cookies.set('email', email);
+      var accounts = this.state.accounts;
+      if(accounts){
+        if(accounts.findWhere({username: username})){
+          this.setState({ user: accounts.findWhere({username: username}) });
+        }else{
+          var user = new models.Account({username: username, email: email });
+          this.setState({ user: user });
+          user = accounts.add(user);
+          user.save();
+        }
+      }else{
+        console.log('error with login, no accounts collection is set');
+      }
+    }else{
+      this.setState({'user': undefined});
+    }
+  },
+  logOut: function(){
+    Cookies.remove('username');
+    Cookies.remove('email');
+    this.setState({'user': undefined});
+    this.forceUpdate();
+  },
+  edit: function(username, email){
+    var user = this.state.user;
+    user.set({username: username, email: email });
+    user.save();
+    Cookies.set('username', username);
+    Cookies.set('email', email);
+    this.setState({'user': user });
+  },
+  handleCheckout: function(token){
+    var user = this.state.user;
+    var purchases;
+    var purchase = { token: token, cart: this.state.cart.toJSON() };
+    if(user.get('purchases')){
+      purchases = user.get('purchases');
+      purchases.push(purchase);
+    }else{
+      purchases = [];
+      purchases.push(purchase);
+    }
+    user.set({ 'purchases': purchases });
+    user.save();
+    localStorage.removeItem('cart');
+    this.state.cart.reset();
+    this.forceUpdate();
+  },
+  removeItem: function(model){
+    var model = this.state.cart.get(model);
+    model.destroy();
+    var data = this.state.cart.toJSON();
+    localStorage.setItem('cart', JSON.stringify(data));
+    this.setState({ 'cart': this.state.cart });
+    this.forceUpdate();
+  },
+  render: function(){
+    return (
+      <div>
+        <div id="header">
+          <Header user={this.state.user} page={window.location.href} logOut={this.logOut} edit={this.edit} />
+        </div>
+        <div>
+          <Cart user={this.state.user}
+            cart={this.state.cart}
+            login={this.login}
+            removeItem={this.removeItem}
+            handleCheckout={this.handleCheckout}/>
+        </div>
+      </div>
+    );
+  }
+})
+module.exports = CartPage;
