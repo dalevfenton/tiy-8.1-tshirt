@@ -27,7 +27,6 @@ var Header = React.createClass({
           </a>
           <ul className="dropdown-menu">
             <ProfileButton user={this.props.user} edit={this.props.edit} />
-            <li><a href="#">Your Orders</a></li>
             <li role="separator" className="divider"></li>
             <li><a href="#" onClick={this.props.logOut}>Log Out</a></li>
           </ul>

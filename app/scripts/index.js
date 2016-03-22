@@ -33,10 +33,7 @@ accounts.fetch().done(function(){
     user = undefined;
   }
 
-  console.log(user);
-
   var sort = window.location.href.slice(-9);
-
   if( sort == 'cart.html' ){
     ReactDOM.render(
       React.createElement(

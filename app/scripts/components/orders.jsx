@@ -6,63 +6,31 @@ var Input = require('react-bootstrap').Input;
 var ButtonInput = require('react-bootstrap').ButtonInput;
 var Cookies = require('js-cookie');
 
-var ProfileButton = React.createClass({
+var OrdersButton = React.createClass({
   getInitialState() {
-    console.log(this.props.user);
     return {
       showModal: false,
-      username: this.props.user.get('username'),
-      email: this.props.user.get('email')
      };
   },
-  editProfile: function(e){
+  close(e) {
     e.preventDefault();
-    var username = this.state.username;
-    var email = this.state.email;
-    this.close();
-    this.props.edit(username, email);
-  },
-  handleName: function(){
-    this.setState({
-      username: this.refs.username.getValue()
-    });
-  },
-  handleEmail: function(){
-    this.setState({
-      email: this.refs.email.getValue()
-    });
-  },
-  close() {
     this.setState({ showModal: false });
   },
-  open() {
+  open(e) {
+    e.preventDefault();
     this.setState({ showModal: true });
   },
   render() {
     return (
         <li onClick={this.open}><a href="#">
-          Edit Profile
+          Your Orders
         </a>
         <Modal show={this.state.showModal} onHide={this.close}>
           <Modal.Header closeButton>
-            <Modal.Title>Edit Your Profile</Modal.Title>
+            <Modal.Title>Your Orders</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <form onSubmit={this.editProfile}>
-              <Input type="text"
-                value={this.state.username}
-                onChange={this.handleName}
-                label="Username"
-                placeholder="Enter Your Username"
-                ref="username" />
-              <Input type="email"
-                value={this.state.email}
-                onChange={this.handleEmail}
-                label="Email Address"
-                placeholder="Enter Email Address"
-                ref="email" />
-              <ButtonInput type="submit" bsStyle="primary" value="Edit Profile" />
-            </form>
+            <div>List of Orders Goes Here</div>
           </Modal.Body>
         </Modal>
         </li>
@@ -70,4 +38,4 @@ var ProfileButton = React.createClass({
   }
 });
 
-module.exports = ProfileButton;
+module.exports = OrdersButton;

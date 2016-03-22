@@ -31,7 +31,11 @@ var ShirtDetail = React.createClass({
   handleSubmit: function(e){
     e.preventDefault();
     if(this.state.size !== 'Size' && this.state.quantity !== ''){
-      var cartItem = $.extend( {}, {'shirt': _.omit(this.props.model.toJSON(), 'id'), 'size': this.state.size, 'quantity': this.state.quantity, 'timeAdded': Date.now() });
+      var cartItem = $.extend( {}, {
+        'shirt': _.omit(this.props.model.toJSON(), 'id'),
+        'size': this.state.size, 'quantity': this.state.quantity,
+        'timeAdded': Date.now()
+      });
       var dataObj = [];
       if(localStorage.getItem('cart')){
         var rawData = localStorage.getItem('cart');
