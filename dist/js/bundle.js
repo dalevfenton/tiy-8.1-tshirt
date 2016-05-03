@@ -303,7 +303,7 @@ var Header = React.createClass({displayName: "Header",
           ), 
           React.createElement("div", {className: "collapse navbar-collapse", id: "bs-navbar-collapse-1"}, 
             React.createElement("ul", {className: "nav navbar-nav"}, 
-              React.createElement("li", {className: shirtClass}, React.createElement("a", {href: "/dist"}, "T-Shirts")), 
+              React.createElement("li", {className: shirtClass}, React.createElement("a", {href: "index.html"}, "T-Shirts")), 
               React.createElement("li", {className: cartClass}, React.createElement("a", {href: "cart.html"}, "Cart"))
             ), 
             React.createElement("ul", {className: "nav navbar-nav navbar-right"}, 
