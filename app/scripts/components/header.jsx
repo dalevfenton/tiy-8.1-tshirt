@@ -51,7 +51,7 @@ var Header = React.createClass({
           </div>
           <div className="collapse navbar-collapse" id="bs-navbar-collapse-1">
             <ul className="nav navbar-nav">
-              <li className={shirtClass}><a href="/dist">T-Shirts</a></li>
+              <li className={shirtClass}><a href="index.html">T-Shirts</a></li>
               <li className={cartClass}><a href="cart.html">Cart</a></li>
             </ul>
             <ul className="nav navbar-nav navbar-right">
